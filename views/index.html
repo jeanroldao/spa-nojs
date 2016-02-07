@@ -1,0 +1,102 @@
+<style>
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+a.button {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+}
+
+.tab {
+  float: left;
+}
+
+noscript {
+  display: block;
+}
+
+.main > * {
+    display: none;
+}
+
+.main > *:last-child {
+    display: block;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1) }
+    50% { transform: scale(0.95) }
+    100% { transform: scale(1) }
+}
+
+.main > *:target {
+    display: block;
+    animation: pulse 0.5s linear 1;
+}
+
+.main > *:target ~ * {
+    display: none;
+}
+</style>
+<div class="main">
+  {{#each organizations}}
+  <div id="edit-{{_id}}" class="tab">
+    <h1>Edit organizations</h1>
+    <h2><a href="#home">Back</a></h2>
+    <form method="post">
+      <input type="hidden" name="type" value="organization">
+      <div><b>Id:</b></div>
+      <div>{{_id}}<input type="hidden" name="_id" value="{{_id}}"></div>
+      <div><b>Name:</b></div>
+      <div><input type="text" name="name" value="{{name}}"></div>
+      <div><input type="submit" value="Save"></div>
+    </form>
+  </div>
+  {{/each}}
+  <div id="edit-new" class="tab">
+    <h1>Edit organizations</h1>
+    <h2><a href="#home">Back</a></h2>
+    <form method="post">
+      <input type="hidden" name="type" value="organization">
+      <div><b>Id:</b></div>
+      <div>new<input type="hidden" name="_id" value="new"></div>
+      <div><b>Name:</b></div>
+      <div><input type="text" name="name" value=""></div>
+      <div><input type="submit" value="Save"></div>
+    </form>
+  </div>
+  <div id="home" class="tab">
+    <h1>List of organizations</h1>
+    <a href="#edit-new">New</a>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+      {{#each organizations}}
+      <tr>
+        <td>{{_id}}</td>
+        <td>{{name}}</td>
+        <td>
+          <a href="#edit-{{_id}}">Edit</a>
+          <a href="nojs/delete/{{_id}}">Delete</a>
+        </td>
+      </tr>
+      {{/each}}
+    </table>
+  </div>
+</div>
+<noscript>
+[noscript]This will still work
+</noscript>

@@ -1,0 +1,128 @@
+<style>
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+.tab {
+  float: left;
+}
+
+.tab.ng-enter {
+  animation: pulse 0.5s linear 1;
+}
+/*
+.tab.ng-leave {
+  transition:0.5s linear all;
+  opacity:1;
+}
+*/
+noscript {
+  display: block;
+}
+
+.main > * {
+    display: none;
+}
+
+.main > *:last-child {
+    display: block;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1) }
+    50% { transform: scale(0.95) }
+    100% { transform: scale(1) }
+}
+/*
+.main > * {
+    display: block;
+    animation: pulse 0.5s linear 1;
+}
+
+.main > *:target ~ * {
+    display: none;
+}
+*/
+</style>
+<script src="jquery-1.11.2.min.js"></script>
+<script src="angular.min.js"></script>
+<script src="angular-animate.min.js"></script>
+<script>
+var app = angular.module('orgApp', ['ngAnimate']);
+
+app.controller('indexController', function($http) {
+  var index = this;
+  index.edit = null;
+  index.organizations = null;
+  
+  index.delete = function(id) {
+    index.organizations = null;
+    $http.delete('api/v1/organization/' + id).success(function() {
+      load();
+    });
+  };
+  
+  index.save = function () {
+    if (index.edit._id) {
+      $http.put('api/v1/organization/' + index.edit._id, index.edit).success(function() {
+        load();
+      });
+    } else {
+      $http.post('api/v1/organization/', index.edit).success(function() {
+        load();
+      });
+    }
+    index.edit = null;
+    index.organizations = null;
+  };
+  
+  function load() {
+    $http.get('api/v1/organization').success(function(data) {
+      index.organizations = data;
+    });
+  }; 
+  load();
+});
+$(function(){ $('.main').show();});
+</script>
+<div class="main" style="display: none;" ng-app="orgApp" ng-controller="indexController as index">
+  <div class="tab" ng-if="index.edit">
+    <h1>Edit organizations</h1>
+    <h2><a href="" ng-click="index.edit=null">Back</a></h2>
+    <form ng-submit="index.save()">
+      <input type="hidden" name="type" value="organization">
+      <div><b>Id:</b></div>
+      <div>{{index.edit._id}}</div>
+      <div><b>Name:</b></div>
+      <div><input type="text" name="name" ng-model="index.edit.name"></div>
+      <div><input type="submit" value="Save"></div>
+    </form>
+  </div>
+  <div id="tab1" class="tab" ng-if="index.organizations && !index.edit">
+    <h1>List of organizations</h1>
+    <a href="" ng-click="index.edit = {}">New</a>
+    <table>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Action</th>
+      </tr>
+      <tr ng-repeat="org in index.organizations">
+        <td>{{org._id}}</td>
+        <td>{{org.name}}</td>
+        <td>
+          <a href="" ng-click="index.edit = org;">Edit</a>
+          <a href="" ng-click="index.delete(org._id)">Delete</a>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<noscript>
+[noscript]This will still work
+</noscript>
